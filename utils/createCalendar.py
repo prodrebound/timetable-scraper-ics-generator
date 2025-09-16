@@ -13,7 +13,7 @@ def create_uid(title, start, end):
     return hashlib.md5(data.encode("utf-8")).hexdigest() + env.UID_POSTFIX
 
 
-def create_ics(events: list[LectureEvent], filename: str = "stundenplan.ics") -> None:
+def create_ics(events: list[LectureEvent], filename: str = "timetable.ics") -> None:
     """
     Create an ICS calendar file from a list of LectureEvent objects.
 
