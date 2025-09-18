@@ -39,7 +39,7 @@ def create_ics(events: list[LectureEvent], filename: str = "timetable.ics") -> N
     standard.add("tzoffsetto", "+0100")
     # generic start: 1st Jan 1970 at 03:00 local time
     standard.add("dtstart", datetime(1970, 1, 1, 3, 0, 0))
-    standard.add("rrule", {"freq": "yearly", "bymonth": 10, "byday": "-1SU"})
+    standard.add("rrule", {"freq": "yearly", "bymonth": 10, "byday": "5SU"})
 
     # Daylight saving time (CEST → summer)
     daylight = TimezoneDaylight()
@@ -48,7 +48,7 @@ def create_ics(events: list[LectureEvent], filename: str = "timetable.ics") -> N
     daylight.add("tzoffsetto", "+0200")
     # generic start: 1st Jan 1970 at 02:00 local time
     daylight.add("dtstart", datetime(1970, 1, 1, 2, 0, 0))
-    daylight.add("rrule", {"freq": "yearly", "bymonth": 3, "byday": "-1SU"})
+    daylight.add("rrule", {"freq": "yearly", "bymonth": 3, "byday": "5SU"})
 
     tz_component.add_component(standard)
     tz_component.add_component(daylight)
