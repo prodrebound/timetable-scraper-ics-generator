@@ -1,7 +1,8 @@
 import hashlib
+from datetime import datetime
 
 import pytz
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, Timezone, TimezoneStandard, TimezoneDaylight
 import os
 import env
 from datatypes.lectureEvent import LectureEvent
@@ -26,6 +27,32 @@ def create_ics(events: list[LectureEvent], filename: str = "timetable.ics") -> N
     cal = Calendar()
     cal.add("prodid", "-//Uni Timetable//DE")
     cal.add("version", "2.0")
+
+    tz_component = Timezone()
+    tz_component.add("tzid", env.TIMEZONE)
+    tz_component.add("x-lic-location", env.TIMEZONE)
+
+    # Standard time (CET)
+    standard = TimezoneStandard()
+    standard.add("tzname", "CET")
+    standard.add("tzoffsetfrom", "+0200")
+    standard.add("tzoffsetto", "+0100")
+    standard.add("dtstart", datetime(1970, 10, 25, 3, 0, 0))
+    standard.add("rrule", {"freq": "yearly", "bymonth": 10, "byday": "-1SU"})
+
+    # Daylight time (CEST)
+    daylight = TimezoneDaylight()
+    daylight.add("tzname", "CEST")
+    daylight.add("tzoffsetfrom", "+0100")
+    daylight.add("tzoffsetto", "+0200")
+    daylight.add("dtstart", datetime(1970, 3, 29, 2, 0, 0))
+    daylight.add("rrule", {"freq": "yearly", "bymonth": 3, "byday": "-1SU"})
+
+    tz_component.add_component(standard)
+    tz_component.add_component(daylight)
+
+    cal.add_component(tz_component)
+
 
     for e in events:
         event = Event()
