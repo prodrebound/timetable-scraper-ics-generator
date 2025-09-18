@@ -1,7 +1,8 @@
 import hashlib
+from datetime import datetime
 
 import pytz
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, Timezone, TimezoneStandard, TimezoneDaylight
 import os
 import env
 from datatypes.lectureEvent import LectureEvent
@@ -26,6 +27,34 @@ def create_ics(events: list[LectureEvent], filename: str = "timetable.ics") -> N
     cal = Calendar()
     cal.add("prodid", "-//Uni Timetable//DE")
     cal.add("version", "2.0")
+
+    tz_component = Timezone()
+    tz_component.add("tzid", env.TIMEZONE)
+    tz_component.add("x-lic-location", env.TIMEZONE)
+
+    # Standard time (CET → winter)
+    standard = TimezoneStandard()
+    standard.add("tzname", "CET")
+    standard.add("tzoffsetfrom", "+0200")
+    standard.add("tzoffsetto", "+0100")
+    # generic start: 1st Jan 1970 at 03:00 local time
+    standard.add("dtstart", datetime(1970, 1, 1, 3, 0, 0))
+    standard.add("rrule", {"freq": "yearly", "bymonth": 10, "byday": "5SU"})
+
+    # Daylight saving time (CEST → summer)
+    daylight = TimezoneDaylight()
+    daylight.add("tzname", "CEST")
+    daylight.add("tzoffsetfrom", "+0100")
+    daylight.add("tzoffsetto", "+0200")
+    # generic start: 1st Jan 1970 at 02:00 local time
+    daylight.add("dtstart", datetime(1970, 1, 1, 2, 0, 0))
+    daylight.add("rrule", {"freq": "yearly", "bymonth": 3, "byday": "5SU"})
+
+    tz_component.add_component(standard)
+    tz_component.add_component(daylight)
+
+    cal.add_component(tz_component)
+
 
     for e in events:
         event = Event()
