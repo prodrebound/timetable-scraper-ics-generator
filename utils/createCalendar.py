@@ -32,20 +32,22 @@ def create_ics(events: list[LectureEvent], filename: str = "timetable.ics") -> N
     tz_component.add("tzid", env.TIMEZONE)
     tz_component.add("x-lic-location", env.TIMEZONE)
 
-    # Standard time (CET)
+    # Standard time (CET → winter)
     standard = TimezoneStandard()
     standard.add("tzname", "CET")
     standard.add("tzoffsetfrom", "+0200")
     standard.add("tzoffsetto", "+0100")
-    standard.add("dtstart", datetime(1970, 10, 25, 3, 0, 0))
+    # generic start: 1st Jan 1970 at 03:00 local time
+    standard.add("dtstart", datetime(1970, 1, 1, 3, 0, 0))
     standard.add("rrule", {"freq": "yearly", "bymonth": 10, "byday": "-1SU"})
 
-    # Daylight time (CEST)
+    # Daylight saving time (CEST → summer)
     daylight = TimezoneDaylight()
     daylight.add("tzname", "CEST")
     daylight.add("tzoffsetfrom", "+0100")
     daylight.add("tzoffsetto", "+0200")
-    daylight.add("dtstart", datetime(1970, 3, 29, 2, 0, 0))
+    # generic start: 1st Jan 1970 at 02:00 local time
+    daylight.add("dtstart", datetime(1970, 1, 1, 2, 0, 0))
     daylight.add("rrule", {"freq": "yearly", "bymonth": 3, "byday": "-1SU"})
 
     tz_component.add_component(standard)
